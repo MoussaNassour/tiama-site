@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import Pic from '../components/Pic.astro';
+import Icon from '../components/Icon.astro';
+import Cta from '../components/Cta.astro';
+import { getDict, href, abs, type Lang } from '../i18n';
+import { img } from '../data/work';
+import { breadcrumb, webPage } from '../lib/schema';
+import { site } from '../config/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = getDict(lang);
+const p = d.aboutPage;
+const toolMeta: [string, string, string][] = [
+  ['Illustrator', 'Ai', '#ff9a00'],
+  ['Photoshop', 'Ps', '#31a8ff'],
+  ['InDesign', 'Id', '#ff3366'],
+  ['Premiere Pro', 'Pr', '#9999ff'],
+  ['Procreate', 'Pc', '#1b1b1b'],
+];
+---
+<Base
+  lang={lang}
+  path="/about/"
+  title={p.seo.title}
+  description={p.seo.description}
+  current="about"
+  schema={[
+    webPage('AboutPage', lang, '/about/', p.seo.title, p.seo.description),
+    breadcrumb([
+      { name: d.ui.home, url: abs(lang, '/') },
+      { name: p.eyebrow, url: abs(lang, '/about/') },
+    ]),
+  ]}
+>
+  <section class="phero">
+    <div class="wrap about-grid" style="align-items:start">
+      <div>
+        <span class="eyebrow">{p.eyebrow}</span>
+        <h1>{p.title}</h1>
+        <div style="margin-top:2rem">
+          <p class="big-text">{p.paras[0]}</p>
+          {p.paras.slice(1).map((x) => <p class="lede" style="margin-top:1.1rem">{x}</p>)}
+        </div>
+        <div class="hero-cta" style="margin-top:2rem">
+          <a class="btn btn-primary btn-lg" href={href(lang, '/contact/')}>{d.ui.cta} <Icon name="arrow" class="go flip" /></a>
+          <a class="btn btn-ghost btn-lg" href={href(lang, '/work/')}>{d.ui.viewAll}</a>
+        </div>
+      </div>
+      <div class="portrait">
+        <div class="frame"><Pic src={img('portrait')} alt={`${site.name}, ${d.home.hero.eyebrow}`} sizes="(min-width: 860px) 400px, 80vw" eager widths={[320, 480, 640]} /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap two" style="align-items:start">
+      <div class="rv">
+        <h2 style="font-size:clamp(1.8rem,3.4vw,2.8rem);margin-bottom:1.4rem">{p.toolsTitle}</h2>
+        <div class="tools-row">
+          {toolMeta.map(([n, s, c]) => <span class="tool"><b style={`background:${c}`}>{s}</b>{n}</span>)}
+        </div>
+      </div>
+      <div class="rv">
+        <h2 style="font-size:clamp(1.8rem,3.4vw,2.8rem);margin-bottom:1.4rem">{p.eduTitle}</h2>
+        <ul class="edu">
+          {p.edu.map((e) => <li><span dir="ltr">{e.y}</span><b>{e.t}</b><small>{e.s}</small></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head rv"><h2>{p.valuesTitle}</h2></div>
+      <div class="grid4">
+        {p.values.map((v, i) => (
+          <article class="why rv" style={`--d:${i}`}>
+            <div class="ico" dir="ltr">0{i + 1}</div>
+            <h3>{v.t}</h3>
+            <p>{v.d}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0"><div class="wrap"><Cta lang={lang} /></div></section>
+</Base>

@@ -1,0 +1,215 @@
+---
+import Base from '../layouts/Base.astro';
+import Pic from '../components/Pic.astro';
+import Icon from '../components/Icon.astro';
+import Cta from '../components/Cta.astro';
+import type { ImageMetadata } from 'astro';
+import { getDict, href, abs, assetUrl, type Lang } from '../i18n';
+import { img } from '../data/work';
+import { cases, caseSlugs, type CaseSlug } from '../data/cases';
+import { bigUrl } from '../lib/img';
+const ogs = import.meta.glob<ImageMetadata>('../assets/brand/og-*.jpg', { eager: true, import: 'default' });
+import { breadcrumb, webPage, personId } from '../lib/schema';
+
+interface Props { lang: Lang; slug: CaseSlug }
+const { lang, slug } = Astro.props;
+const d = getDict(lang);
+const c = cases[slug];
+const t: any = d.cases[slug];
+const cap = (k: string) => t.captions[k] as string;
+const nextSlug = caseSlugs[(caseSlugs.indexOf(slug) + 1) % caseSlugs.length];
+const next = d.cases[nextSlug];
+const nextC = cases[nextSlug];
+const path = `/work/${slug}/`;
+const kotg = slug === 'king-of-the-game';
+
+const withBig = async (list: [string, string][]) =>
+  Promise.all(list.map(async ([name, key]) => ({ name, key, src: img(name), big: await bigUrl(img(name)), label: cap(key) })));
+const gallery = await withBig(c.gallery);
+const second = c.gallerySecond ? await withBig(c.gallerySecond) : [];
+const logos = await withBig(c.logos);
+const pack = c.pack ? { src: img(c.pack), big: await bigUrl(img(c.pack)) } : null;
+const place = kotg
+  ? await Promise.all([['kotg-storefront', 'store'], ['kotg-arcade', 'floor'], ['kotg-menu', 'menu']].map(async ([n, k]) => ({ src: img(n), big: await bigUrl(img(n)), label: cap(k) })))
+  : [];
+const hasVideo = !!c.video;
+const videoUrl = c.video ? assetUrl(`video/${c.video}.mp4`) : '';
+const paperClass = (name: string) => (name === 'kotg-logo' ? 'paper dark big' : 'paper' + (logos.length === 1 ? ' big' : ''));
+const sub = t.sub as string;
+const palNames: string[] = t.colorNames ?? [];
+
+const pageSchema = {
+  '@type': 'CreativeWork',
+  '@id': `${abs(lang, path)}#work`,
+  name: t.title,
+  description: t.seo.description,
+  url: abs(lang, path),
+  inLanguage: lang,
+  creator: { '@id': personId() },
+  genre: ['Brand identity', 'Packaging design', 'Illustration'],
+};
+---
+<Base
+  lang={lang}
+  path={path}
+  title={t.seo.title}
+  description={t.seo.description}
+  current="work"
+  lightbox
+  ogImage={ogs[`../assets/brand/og-${slug}.jpg`]}
+  bodyClass="case"
+  bodyStyle={`--c-bg:${c.bg};--c-ink:${c.ink};--c-accent:${c.accent}`}
+  schema={[
+    webPage('WebPage', lang, path, t.seo.title, t.seo.description),
+    pageSchema,
+    breadcrumb([
+      { name: d.ui.home, url: abs(lang, '/') },
+      { name: d.workPage.title, url: abs(lang, '/work/') },
+      { name: t.title, url: abs(lang, path) },
+    ]),
+  ]}
+>
+  <section class="case-hero">
+    <div class="wrap grid">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={href(lang, '/work/')}>← {d.ui.allWork}</a>
+        </nav>
+        <span class="eyebrow">{t.tag}</span>
+        <h1 style="margin-top:1.2rem">{t.title}</h1>
+        <p class="sub">{sub}</p>
+        <p class="tagline">{t.tagline}</p>
+        <a class="btn btn-primary" href={href(lang, '/contact/')}>{d.ui.cta} <Icon name="arrow" class="go flip" /></a>
+      </div>
+      <div class="pic"><Pic src={img(c.cover)} alt={d.ui.caption(t.title, d.cats.branding)} sizes="(min-width: 900px) 420px, 80vw" eager widths={[320, 420, 600]} /></div>
+    </div>
+  </section>
+
+  <section class="case-block">
+    <div class="wrap two">
+      <h2 class="h">{d.ui.brief}</h2>
+      <div class="rv">
+        <p class="lead-p">{t.brief}</p>
+        {t.slogan && <span class="slogan">{t.slogan}</span>}
+      </div>
+    </div>
+  </section>
+
+  <section class="case-block">
+    <div class="wrap">
+      <h2 class="h">{d.ui.logoSystem}</h2>
+      <div class="tiles" data-lbg>
+        {logos.map((l) => (
+          <figure class={paperClass(l.name) + ' mi'} style="margin:0;cursor:zoom-in;border:0">
+            <Pic src={l.src} alt={`${t.title} — ${l.label}`} sizes="260px" widths={[240, 480]} />
+            <figcaption>{l.label}</figcaption>
+            <button class="hit" type="button" data-lb data-lb-src={l.big} data-lb-title={t.title} data-lb-sub={l.label} aria-label={`${t.title} — ${l.label}`}></button>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="case-block">
+    <div class="wrap">
+      <h2 class="h">{d.ui.palette}</h2>
+      <div class="pal">
+        {c.palette.map((hex, i) => (
+          <div class="sw"><i style={`background:${hex}`}></i><span dir="ltr">{hex.toUpperCase()}</span>{palNames[i] && <small>{palNames[i]}</small>}</div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {pack && (
+    <section class="case-block">
+      <div class="wrap two" data-lbg>
+        <div class="rv">
+          <h2 class="h">{t.packTitle}</h2>
+          <p class="lead-p">{t.pack}</p>
+        </div>
+        <figure class="mi rv" style="margin:0;max-width:420px;justify-self:center">
+          <Pic src={pack.src} alt={`${t.title} — ${cap('box')}`} sizes="(min-width: 860px) 420px, 90vw" widths={[264, 400]} />
+          <button class="hit" type="button" data-lb data-lb-src={pack.big} data-lb-title={t.title} data-lb-sub={cap('box')} aria-label={cap('box')}></button>
+        </figure>
+      </div>
+    </section>
+  )}
+
+  {kotg && (
+    <section class="case-block">
+      <div class="wrap">
+        <h2 class="h">{t.cupsTitle}</h2>
+        <p class="lead-p" style="max-width:46rem;margin-bottom:1.6rem">{t.cupsText}</p>
+        <div class="cups" data-lbg>
+          {second.map((g) => (
+            <figure class="mi">
+              <Pic src={g.src} alt={`${t.title} — ${g.label}`} sizes="(min-width: 900px) 22vw, 46vw" widths={[260, 400, 519]} />
+              <button class="hit" type="button" data-lb data-lb-src={g.big} data-lb-title={t.title} data-lb-sub={g.label} aria-label={g.label}></button>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="case-block">
+    <div class="wrap">
+      <h2 class="h">{kotg ? t.vibeTitle : t.galleryTitle}</h2>
+      <div class="mason cs" data-lbg>
+        {gallery.map((g) => (
+          <figure class="mi">
+            <Pic src={g.src} alt={`${t.title} — ${g.label}`} sizes="(min-width: 1000px) 30vw, (min-width: 600px) 45vw, 92vw" />
+            <figcaption class="cap"><b>{g.label}</b></figcaption>
+            <button class="hit" type="button" data-lb data-lb-src={g.big} data-lb-title={t.title} data-lb-sub={g.label} aria-label={g.label}></button>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {place.length > 0 && (
+    <section class="case-block">
+      <div class="wrap">
+        <h2 class="h">{t.placeTitle}</h2>
+        <div class="place" data-lbg>
+          {place.map((g, i) => (
+            <div>
+              <figure class="mi">
+                <Pic src={g.src} alt={`${t.title} — ${g.label}`} sizes="(min-width: 900px) 30vw, 90vw" />
+                <button class="hit" type="button" data-lb data-lb-src={g.big} data-lb-title={t.title} data-lb-sub={g.label} aria-label={g.label}></button>
+              </figure>
+              <p>{t.places[i]}</p>
+            </div>
+          ))}
+        </div>
+        <div class="chips" style="margin-top:2rem">{t.chips.map((x: string) => <span class="chip gold">{x}</span>)}</div>
+      </div>
+    </section>
+  )}
+
+  {hasVideo && (
+    <section class="case-block">
+      <div class="wrap">
+        <h2 class="h">{t.videoTitle}</h2>
+        {t.videoText && <p class="lead-p" style="max-width:46rem;margin-bottom:1.6rem">{t.videoText}</p>}
+        <div class:list={['vid', slug === 'mielle-dor' && 'tall']}>
+          <video controls playsinline preload="none" poster={img(c.videoPoster!).src}>
+            <source src={videoUrl} type="video/mp4" />
+          </video>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="case-block">
+    <div class="wrap"><Cta lang={lang} /></div>
+  </section>
+
+  <a class="next-case" href={href(lang, `/work/${nextSlug}/`)} style={`--c-accent:${nextC.accent}`}>
+    <div class="wrap">
+      <small>{d.ui.nextProject}</small>
+      <b>{next.title} <span class="flip">→</span></b>
+    </div>
+  </a>
+</Base>

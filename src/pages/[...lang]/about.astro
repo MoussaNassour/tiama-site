@@ -1,0 +1,10 @@
+---
+import View from '../../views/About.astro';
+import { langPaths, pageLang } from '../../i18n';
+
+export function getStaticPaths() {
+  return langPaths();
+}
+const lang = pageLang(Astro.params.lang);
+---
+<View lang={lang} />

@@ -1,0 +1,28 @@
+---
+import Pic from './Pic.astro';
+import Icon from './Icon.astro';
+import { img } from '../data/work';
+import { cases, caseSlugs } from '../data/cases';
+import { getDict, href, type Lang } from '../i18n';
+
+interface Props { lang: Lang; level?: 2 | 3; eager?: boolean }
+const { lang, level = 3, eager = false } = Astro.props;
+const H = level === 2 ? 'h2' : 'h3';
+const d = getDict(lang);
+---
+<div class="cases">
+  {caseSlugs.map((slug, i) => {
+    const c = cases[slug];
+    const t = d.cases[slug];
+    return (
+      <a class:list={['ccard', !eager && 'rv']} style={`--c-bg:${c.bg};--c-ink:${c.ink};--c-accent:${c.accent};--d:${i}`} href={href(lang, `/work/${slug}/`)} data-cursor={d.ui.view}>
+        <div class="top"><span class="num" dir="ltr">0{i + 1}</span><span>{t.tag}</span></div>
+        <div class="pic"><Pic src={img(c.arch)} alt={d.ui.caption(t.title, d.cats.branding)} sizes="(min-width: 1000px) 20vw, 60vw" widths={[200, 320, 480]} eager={eager && i === 0} /></div>
+        <div class="bottom">
+          <div><H>{t.title}</H><p>{t.sub}</p></div>
+          <span class="go"><Icon name="arrow" class="flip" /></span>
+        </div>
+      </a>
+    );
+  })}
+</div>

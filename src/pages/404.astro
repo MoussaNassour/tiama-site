@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { getDict, href } from '../i18n';
+
+const d = getDict('en');
+---
+<Base lang="en" path="/404/" title={`${d.notFound.title} | Tiama Nassour`} description={d.notFound.text} noindex>
+  <section class="nf">
+    <div>
+      <b>404</b>
+      <h1>{d.notFound.title}</h1>
+      <p>{d.notFound.text}</p>
+      <a class="btn btn-primary btn-lg" href={href('en', '/')}>{d.notFound.cta}</a>
+    </div>
+  </section>
+</Base>

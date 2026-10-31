@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Faq from '../components/Faq.astro';
+import Cta from '../components/Cta.astro';
+import { getDict, href, abs, type Lang } from '../i18n';
+import { breadcrumb, faqSchema, webPage } from '../lib/schema';
+import { waLink } from '../config/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = getDict(lang);
+const p = d.servicesPage;
+---
+<Base
+  lang={lang}
+  path="/services/"
+  title={p.seo.title}
+  description={p.seo.description}
+  current="services"
+  schema={[
+    webPage('WebPage', lang, '/services/', p.seo.title, p.seo.description),
+    breadcrumb([
+      { name: d.ui.home, url: abs(lang, '/') },
+      { name: p.eyebrow, url: abs(lang, '/services/') },
+    ]),
+    faqSchema(d.faq),
+  ]}
+>
+  <section class="phero">
+    <div class="wrap">
+      <span class="eyebrow">{p.eyebrow}</span>
+      <h1>{p.title}</h1>
+      <p class="lede">{p.sub}</p>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:clamp(48px,7vw,96px)">
+    {d.services.map((s, i) => (
+      <article class="svc rv" id={s.id}>
+        <div>
+          <span class="num" dir="ltr">0{i + 1}</span>
+          <h2>{s.t}</h2>
+          <p>{s.d}</p>
+          <a class="btn btn-ghost" href={waLink(`${d.ui.waHello} (${s.t})`)} target="_blank" rel="noopener"><Icon name="chat" /> {d.ui.whatsapp}</a>
+        </div>
+        <div>
+          <h3>{p.includes}</h3>
+          <ul>{s.l.map((x) => <li>{x}</li>)}</ul>
+        </div>
+      </article>
+    ))}
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head rv"><h2>{p.faqTitle}</h2></div>
+      <Faq items={d.faq} />
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0"><div class="wrap"><Cta lang={lang} /></div></section>
+</Base>

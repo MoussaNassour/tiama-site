@@ -1,0 +1,20 @@
+{
+  "name": "tiama-site",
+  "version": "1.0.0",
+  "description": "Portfolio website for Tiama Nassour — graphic designer & illustrator",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.4.4",
+    "sharp": "^0.35.5"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  }
+}

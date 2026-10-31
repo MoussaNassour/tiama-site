@@ -1,0 +1,14 @@
+---
+import { locales, getDict, href, type Lang } from '../i18n';
+interface Props { lang: Lang; path: string }
+const { lang, path } = Astro.props;
+const d = getDict(lang);
+---
+<div class="lang" role="group" aria-label={d.ui.language}>
+  {locales.map((l) => {
+    const x = getDict(l);
+    return (
+      <a href={href(l, path)} lang={l} hreflang={l} aria-current={l === lang ? 'true' : undefined} title={x.label}>{x.short}</a>
+    );
+  })}
+</div>

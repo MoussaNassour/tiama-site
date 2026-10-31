@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkCard from '../components/WorkCard.astro';
+import CaseCards from '../components/CaseCards.astro';
+import Cta from '../components/Cta.astro';
+import { getDict, href, abs, type Lang } from '../i18n';
+import { work, cats, type Cat } from '../data/work';
+import { breadcrumb, webPage } from '../lib/schema';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = getDict(lang);
+const p = d.workPage;
+
+// Interleave categories so "All" feels varied instead of grouped.
+const buckets = cats.map((c) => work.filter((w) => w.cat === c));
+const mixed: typeof work = [];
+for (let i = 0; buckets.some((b) => i < b.length); i++) buckets.forEach((b) => b[i] && mixed.push(b[i]));
+const present = cats.filter((c: Cat) => work.some((w) => w.cat === c));
+---
+<Base
+  lang={lang}
+  path="/work/"
+  title={p.seo.title}
+  description={p.seo.description}
+  current="work"
+  lightbox
+  schema={[
+    webPage('CollectionPage', lang, '/work/', p.seo.title, p.seo.description),
+    breadcrumb([
+      { name: d.ui.home, url: abs(lang, '/') },
+      { name: p.title, url: abs(lang, '/work/') },
+    ]),
+  ]}
+>
+  <section class="phero">
+    <div class="wrap">
+      <span class="eyebrow">{p.eyebrow}</span>
+      <h1>{p.title}</h1>
+      <p class="lede">{p.sub}</p>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:clamp(32px,5vw,64px)">
+    <CaseCards lang={lang} level={2} eager />
+  </section>
+
+  <section class="wrap" style="padding-bottom:clamp(64px,9vw,120px)">
+    <div class="filters" role="group" aria-label={p.filter}>
+      <button type="button" data-filter="all" aria-pressed="true">{d.cats.all}</button>
+      {present.map((c) => <button type="button" data-filter={c} aria-pressed="false">{d.cats[c]}</button>)}
+    </div>
+    <div class="mason" data-lbg>
+      {mixed.map((it, i) => <WorkCard item={it} lang={lang} eager={i < 3} />)}
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0"><div class="wrap"><Cta lang={lang} /></div></section>
+</Base>

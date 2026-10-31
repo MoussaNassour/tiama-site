@@ -1,0 +1,121 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import '../styles/fonts.css';
+import '../styles/global.css';
+import '../styles/pages.css';
+import ogDefault from '../assets/brand/og-default.jpg';
+import frauncesUrl from '../assets/fonts/fraunces-latin-wght-normal.woff2?url';
+import instrumentUrl from '../assets/fonts/instrument-sans-latin-wght-normal.woff2?url';
+import cairoArUrl from '../assets/fonts/cairo-arabic-wght-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import { abs, assetUrl, getDict, locales, type Lang } from '../i18n';
+import { site, waLink } from '../config/site';
+import { baseSchemas } from '../lib/schema';
+
+interface Props {
+  lang: Lang;
+  /** logical, language-less path, e.g. '/work/' */
+  path: string;
+  title: string;
+  description: string;
+  current?: 'work' | 'services' | 'about' | 'contact';
+  ogImage?: ImageMetadata;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  lightbox?: boolean;
+  schema?: Record<string, unknown>[];
+  bodyClass?: string;
+  bodyStyle?: string;
+}
+const { lang, path, title, description, current, ogImage, ogType = 'website', noindex = false, lightbox = false, schema = [], bodyClass, bodyStyle } = Astro.props;
+const d = getDict(lang);
+const canonical = abs(lang, path);
+const og = await getImage({ src: ogImage ?? ogDefault, format: 'jpg', width: 1200, height: 630, fit: 'cover' });
+const ogUrl = new URL(og.src, site.url).toString();
+const graph = { '@context': 'https://schema.org', '@graph': [...baseSchemas(lang, ogUrl), ...schema] };
+const fonts = lang === 'ar' ? [cairoArUrl] : [frauncesUrl, instrumentUrl];
+const rest = locales.filter((l) => l !== lang);
+---
+<!doctype html>
+<html lang={lang} dir={d.dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={abs(l, path)} />)}
+    <link rel="alternate" hreflang="x-default" href={abs('en', path)} />
+    <meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large,max-snippet:-1'} />
+    <meta name="author" content={site.name} />
+    <meta name="theme-color" content="#07140f" />
+    {site.googleSiteVerification && <meta name="google-site-verification" content={site.googleSiteVerification} />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={d.locale} />
+    {rest.map((l) => <meta property="og:locale:alternate" content={getDict(l).locale} />)}
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <link rel="icon" href={assetUrl('favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={assetUrl('apple-touch-icon.png')} />
+    <link rel="manifest" href={assetUrl('manifest.webmanifest')} />
+    {fonts.map((f) => <link rel="preload" as="font" type="font/woff2" href={f} crossorigin />)}
+
+    <script is:inline>
+      (function () {
+        var r = document.documentElement;
+        r.classList.add('js');
+        try { r.dataset.theme = localStorage.getItem('theme') || 'dark'; } catch (e) { r.dataset.theme = 'dark'; }
+      })();
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+    {site.cloudflareAnalyticsToken && (
+      <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: site.cloudflareAnalyticsToken })} />
+    )}
+  </head>
+  <body class={bodyClass} style={bodyStyle} data-wa={waLink(d.ui.waHello)}>
+    <a class="skip" href="#main">{d.ui.skip}</a>
+    <div class="progress" aria-hidden="true"></div>
+    <div id="glow" aria-hidden="true"></div>
+    <div id="cur" aria-hidden="true"></div>
+    <Header lang={lang} path={path} current={current} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} path={path} />
+
+    <a class="fab" href={waLink(d.ui.waHello)} target="_blank" rel="noopener" aria-label={d.ui.whatsapp}>
+      <Icon name="chat" /><span>WhatsApp</span>
+    </a>
+
+    {lightbox && (
+      <dialog class="lb" id="lb" aria-label="Image viewer">
+        <div class="lb-in">
+          <button class="icon-btn x" type="button" data-lb-close aria-label={d.ui.close}><Icon name="close" /></button>
+          <button class="icon-btn pv" type="button" data-lb-prev aria-label={d.ui.prev}><Icon name="prev" /></button>
+          <button class="icon-btn nx" type="button" data-lb-next aria-label={d.ui.next}><Icon name="next" /></button>
+          <div class="lb-stage"></div>
+          <div class="lb-cap"><b></b><span></span></div>
+        </div>
+      </dialog>
+    )}
+
+    <script>
+      import '../scripts/main.ts';
+    </script>
+  </body>
+</html>

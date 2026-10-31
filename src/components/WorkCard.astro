@@ -1,0 +1,29 @@
+---
+import Pic from './Pic.astro';
+import Icon from './Icon.astro';
+import { img, type WorkItem } from '../data/work';
+import { bigUrl } from '../lib/img';
+import { assetUrl, getDict, type Lang } from '../i18n';
+
+interface Props { item: WorkItem; lang: Lang; as?: 'mi' | 'tile'; sizes?: string; eager?: boolean }
+const { item, lang, as = 'mi', sizes = '(min-width: 1000px) 33vw, (min-width: 600px) 50vw, 100vw', eager = false } = Astro.props;
+const d = getDict(lang);
+const src = img(item.img);
+const big = await bigUrl(src);
+const catLabel = d.cats[item.cat];
+const alt = d.ui.caption(item.title, catLabel);
+const sub = item.personal ? `${catLabel} · ${d.work.personal}` : catLabel;
+const video = item.video ? assetUrl(`video/${item.video}.mp4`) : undefined;
+const note = item.note ? d.work.notes[item.note] : undefined;
+---
+<figure class:list={[as, item.oval && 'oval']} data-cat={item.cat} data-video={video} style={as === 'tile' ? `aspect-ratio:${src.width}/${src.height}` : undefined}>
+  <Pic src={src} alt={alt} sizes={sizes} eager={eager} />
+  <figcaption class="cap"><b>{item.title}</b><span>{sub}</span></figcaption>
+  {video && <span class="playb" aria-hidden="true"><Icon name="play" /></span>}
+  {video && item.hasAudio && (
+    <button class="snd" type="button" aria-pressed="false" aria-label={d.ui.sound}>
+      <Icon name="vol-off" class="off" /><Icon name="vol-on" class="on" />
+    </button>
+  )}
+  <button class="hit" type="button" data-lb data-lb-src={big} data-lb-video={video} data-lb-title={item.title} data-lb-sub={note ?? sub} aria-label={`${item.title} — ${sub}`}></button>
+</figure>

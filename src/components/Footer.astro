@@ -1,0 +1,49 @@
+---
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+import { getDict, href, type Lang } from '../i18n';
+import { site, waLink } from '../config/site';
+
+interface Props { lang: Lang; path: string }
+const { lang, path } = Astro.props;
+const d = getDict(lang);
+const year = new Date().getFullYear();
+const socials = Object.entries(site.socials).filter(([, v]) => v);
+const mark = lang === 'ar' ? 'تيما' : 'Tiama';
+---
+<footer class="footer">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <p class="lead">{d.home.cta.title}</p>
+        <a class="btn btn-primary" style="display:inline-flex;margin-top:1.2rem" href={href(lang, '/contact/')}>{d.ui.cta} <Icon name="arrow" class="go flip" /></a>
+      </div>
+      <div>
+        <h3>{d.ui.explore}</h3>
+        <a href={href(lang, '/work/')}>{d.ui.nav.work}</a>
+        <a href={href(lang, '/services/')}>{d.ui.nav.services}</a>
+        <a href={href(lang, '/about/')}>{d.ui.nav.about}</a>
+        <a href={href(lang, '/contact/')}>{d.ui.nav.contact}</a>
+      </div>
+      <div>
+        <h3>{d.ui.getInTouch}</h3>
+        <a href={waLink(d.ui.waHello)} rel="noopener" target="_blank">WhatsApp</a>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <a href={`tel:${site.phone.replace(/\s/g, '')}`} dir="ltr" style={lang === 'ar' ? 'text-align:right' : ''}>{site.phone}</a>
+        {socials.map(([k, v]) => <a href={v} rel="me noopener" target="_blank" style="text-transform:capitalize">{k}</a>)}
+      </div>
+      <div>
+        <h3>{d.ui.language}</h3>
+        <LangSwitch lang={lang} path={path} />
+      </div>
+    </div>
+    <div class="wordmark" aria-hidden="true">{mark}</div>
+  </div>
+  <div class="f-bottom">
+    <div class="wrap" style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;width:100%">
+      <span>© {year} {site.name}. {d.ui.rights}</span>
+      <span>{d.ui.footerLine}</span>
+      <a href="#top" style="text-decoration:none">{d.ui.backToTop} ↑</a>
+    </div>
+  </div>
+</footer>

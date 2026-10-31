@@ -1,0 +1,14 @@
+---
+import Case from '../../../views/Case.astro';
+import { locales, defaultLang, pageLang } from '../../../i18n';
+import { caseSlugs, type CaseSlug } from '../../../data/cases';
+
+export function getStaticPaths() {
+  return locales.flatMap((l) =>
+    caseSlugs.map((slug) => ({ params: { lang: l === defaultLang ? undefined : l, slug } })),
+  );
+}
+const lang = pageLang(Astro.params.lang);
+const slug = Astro.params.slug as CaseSlug;
+---
+<Case lang={lang} slug={slug} />

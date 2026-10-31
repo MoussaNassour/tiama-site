@@ -1,0 +1,19 @@
+---
+import Icon from './Icon.astro';
+import { getDict, href, type Lang } from '../i18n';
+import { site, waLink } from '../config/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = getDict(lang);
+---
+<div class="cta rv">
+  <span class="eyebrow">{d.ui.getInTouch}</span>
+  <h2 style="margin-top:1.2rem">{d.home.cta.title}</h2>
+  <p>{d.home.cta.text}</p>
+  <div class="acts">
+    <a class="btn btn-wa btn-lg" href={waLink(d.ui.waHello)} target="_blank" rel="noopener"><Icon name="chat" /> {d.ui.whatsapp}</a>
+    <a class="btn btn-primary btn-lg" href={href(lang, '/contact/')}>{d.ui.cta} <Icon name="arrow" class="go flip" /></a>
+    <a class="btn btn-ghost btn-lg" href={`mailto:${site.email}`}><Icon name="mail" /> {d.ui.email}</a>
+  </div>
+</div>

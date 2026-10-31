@@ -1,0 +1,57 @@
+---
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+import { getDict, href, type Lang } from '../i18n';
+import { site } from '../config/site';
+
+interface Props { lang: Lang; path: string; current?: 'work' | 'services' | 'about' | 'contact' }
+const { lang, path, current } = Astro.props;
+const d = getDict(lang);
+const nav = [
+  ['work', '/work/', d.ui.nav.work],
+  ['services', '/services/', d.ui.nav.services],
+  ['about', '/about/', d.ui.nav.about],
+  ['contact', '/contact/', d.ui.nav.contact],
+] as const;
+const sub = lang === 'ar' ? 'مصمّمة جرافيك' : lang === 'fr' ? 'Graphiste' : 'Graphic designer';
+---
+<header class="header" id="top">
+  <div class="wrap">
+    <a class="brand" href={href(lang, '/')}>
+      <svg class="mark" viewBox="0 0 34 40" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M2 39V17C2 8.2 8.7 1.5 17 1.5S32 8.2 32 17v22"/>
+        <path d="M10 14h14M17 14v17"/>
+      </svg>
+      <span>{site.name}<small>{sub}</small></span>
+    </a>
+
+    <nav class="nav-d" aria-label="Main">
+      {nav.map(([k, p, label]) => (
+        <a href={href(lang, p)} aria-current={current === k ? 'page' : undefined}>{label}</a>
+      ))}
+    </nav>
+
+    <div class="tools">
+      <LangSwitch lang={lang} path={path} />
+      <button class="icon-btn theme" type="button" data-theme-toggle aria-label={d.ui.theme}>
+        <Icon name="sun" class="sun" /><Icon name="moon" class="moon" />
+      </button>
+      <a class="btn btn-primary btn-sm" href={href(lang, '/contact/')}>{d.ui.cta}</a>
+      <button class="icon-btn menu-btn" type="button" data-menu-open aria-label={d.ui.menu} aria-expanded="false" aria-controls="sheet">
+        <Icon name="menu" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label={d.ui.menu}>
+  <button class="icon-btn close" type="button" data-menu-close aria-label={d.ui.close}><Icon name="close" /></button>
+  <nav aria-label="Mobile">
+    <a href={href(lang, '/')}>{d.ui.home}<Icon name="arrow" class="flip" /></a>
+    {nav.map(([, p, label]) => (
+      <a href={href(lang, p)}>{label}<Icon name="arrow" class="flip" /></a>
+    ))}
+  </nav>
+  <LangSwitch lang={lang} path={path} />
+  <a class="btn btn-primary btn-lg" href={href(lang, '/contact/')}>{d.ui.cta}</a>
+</div>

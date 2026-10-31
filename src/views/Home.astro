@@ -1,0 +1,229 @@
+---
+import Base from '../layouts/Base.astro';
+import Pic from '../components/Pic.astro';
+import Icon from '../components/Icon.astro';
+import WorkCard from '../components/WorkCard.astro';
+import Faq from '../components/Faq.astro';
+import Cta from '../components/Cta.astro';
+import CaseCards from '../components/CaseCards.astro';
+import { getDict, href, type Lang } from '../i18n';
+import { img, byId } from '../data/work';
+import { webPage } from '../lib/schema';
+import { site } from '../config/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = getDict(lang);
+const h = d.home;
+const cat = d.cats;
+const hero = {
+  a: img('ish-ish-family'),
+  b: img('wings-of-tradition'),
+  c: img('unbowed'),
+  s: img('kotg-logo'),
+};
+const badge = lang === 'ar' ? 'جنوب لبنان • إلى العالم • ' : lang === 'fr' ? 'Sud-Liban • Monde entier • ' : 'South Lebanon • Worldwide • ';
+const strip = ['ish-ish', 'unbowed', 'wings', 'mask', 'first-illustration', 'reserved', 'chapter', 'sit-down', 'meets-reality'].map(byId);
+const toolMeta: [string, string, string][] = [
+  ['Illustrator', 'Ai', '#ff9a00'],
+  ['Photoshop', 'Ps', '#31a8ff'],
+  ['InDesign', 'Id', '#ff3366'],
+  ['Premiere Pro', 'Pr', '#9999ff'],
+  ['Procreate', 'Pc', '#1b1b1b'],
+];
+const ha = (k: string) => d.ui.caption(k, cat.illustration);
+---
+<Base
+  lang={lang}
+  path="/"
+  title={h.seo.title}
+  description={h.seo.description}
+  lightbox
+  schema={[webPage('WebPage', lang, '/', h.seo.title, h.seo.description)]}
+>
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="h1">
+    <div class="wrap hero-grid">
+      <div>
+        <h1 id="h1">
+          <span class="role">{h.hero.eyebrow}</span>
+          <span class="l1">{h.hero.lead}</span>
+          <em class="accent l2">{h.hero.em}</em>
+        </h1>
+        <p class="hero-sub">{h.hero.sub}</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href={href(lang, '/contact/')}>{h.hero.cta1} <Icon name="arrow" class="go flip" /></a>
+          <a class="btn btn-ghost btn-lg" href="#work">{h.hero.cta2}</a>
+        </div>
+        <div class="status">
+          <span><i class="dot"></i>{d.ui.open}</span>
+          <span>{d.ui.beirutTime} <b class="clock" data-clock dir="ltr">--:--</b></span>
+        </div>
+        <div class="stats">
+          {h.hero.stats.map((s) => <div><b dir="ltr">{s.n}</b><span>{s.l}</span></div>)}
+        </div>
+      </div>
+
+      <div class="collage">
+        <div class="arch a"><Pic src={hero.a} alt={d.ui.caption('Ish Ish', cat.illustration)} sizes="(min-width: 900px) 26vw, 46vw" eager widths={[240, 360, 480]} /></div>
+        <div class="arch b"><Pic src={hero.b} alt={ha('Wings of Tradition')} sizes="(min-width: 900px) 18vw, 33vw" eager widths={[200, 320, 440]} /></div>
+        <div class="arch c"><Pic src={hero.c} alt={ha('Unbowed')} sizes="(min-width: 900px) 18vw, 33vw" eager widths={[200, 320, 440]} /></div>
+        <div class="sticker"><Pic src={hero.s} alt={d.ui.caption('King of the Game', cat.branding)} sizes="(min-width: 900px) 20vw, 34vw" widths={[160, 320, 480]} /></div>
+        <div class="badge" aria-hidden="true">
+          <svg class="ring" viewBox="0 0 120 120"><defs><path id="circ" d="M60 60m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0" /></defs><text><textPath href="#circ" textLength={lang === 'ar' ? undefined : '295'} lengthAdjust="spacing">{lang === 'ar' ? badge + badge : badge}</textPath></text></svg>
+          <svg class="glyph" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" /></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      <ul>{h.marquee.map((m) => <li>{m}</li>)}</ul>
+      <ul>{h.marquee.map((m) => <li>{m}</li>)}</ul>
+    </div>
+  </div>
+
+  <!-- SELECTED WORK -->
+  <section class="section" id="work" aria-labelledby="work-h">
+    <div class="wrap">
+      <div class="row-head">
+        <div class="sec-head rv">
+          <span class="eyebrow">{h.work.eyebrow}</span>
+          <h2 id="work-h">{h.work.title}</h2>
+          <p>{h.work.sub}</p>
+        </div>
+        <a class="btn btn-ghost rv" href={href(lang, '/work/')}>{d.ui.viewAll} <Icon name="arrow" class="go flip" /></a>
+      </div>
+      <CaseCards lang={lang} />
+    </div>
+  </section>
+
+  <!-- ILLUSTRATION STRIP -->
+  <section class="section" style="padding-top:0" aria-labelledby="ill-h">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="eyebrow">{h.illustration.eyebrow}</span>
+        <h2 id="ill-h">{h.illustration.title}</h2>
+        <p>{h.illustration.sub}</p>
+      </div>
+    </div>
+    <div class="strip" data-lbg tabindex="0" role="region" aria-label={h.illustration.title}>
+      {strip.map((it, i) => (
+        <WorkCard item={it} lang={lang} as="tile" sizes="(min-width: 700px) 340px, 70vw" eager={i < 2} />
+      ))}
+    </div>
+    <div class="wrap"><p class="hint">← {h.illustration.hint} →</p></div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section" style="padding-top:0" aria-labelledby="svc-h">
+    <div class="wrap">
+      <div class="row-head">
+        <div class="sec-head rv">
+          <span class="eyebrow">{h.services.eyebrow}</span>
+          <h2 id="svc-h">{h.services.title}</h2>
+          <p>{h.services.sub}</p>
+        </div>
+        <a class="btn btn-ghost rv" href={href(lang, '/services/')}>{h.services.cta} <Icon name="arrow" class="go flip" /></a>
+      </div>
+      <div class="srows">
+        {d.services.map((s, i) => (
+          <a class="srow rv" href={href(lang, `/services/#${s.id}`)} style={`--d:${i % 3}`}>
+            <span class="n" dir="ltr">0{i + 1}</span>
+            <h3>{s.t}</h3>
+            <p>{s.d}</p>
+            <span class="arr"><Icon name="arrow" class="flip" /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="section" style="padding-top:0" aria-labelledby="why-h">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="eyebrow">{h.why.eyebrow}</span>
+        <h2 id="why-h">{h.why.title}</h2>
+      </div>
+      <div class="grid4">
+        {h.why.items.map((w, i) => (
+          <article class="why rv" style={`--d:${i}`}>
+            <div class="ico" dir="ltr">0{i + 1}</div>
+            <h3>{w.t}</h3>
+            <p>{w.d}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section" style="padding-top:0" aria-labelledby="proc-h">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="eyebrow">{h.process.eyebrow}</span>
+        <h2 id="proc-h">{h.process.title}</h2>
+      </div>
+      <ol class="steps">
+        {h.process.steps.map((s, i) => (
+          <li class="step rv" style={`--d:${i}`}>
+            <h3>{s.t}</h3>
+            <p>{s.d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- REACH -->
+  <section class="section" style="padding-top:0" aria-labelledby="reach-h">
+    <div class="wrap">
+      <div class="reach rv">
+        <span class="eyebrow">{h.reach.eyebrow}</span>
+        <h2 id="reach-h" style="margin-top:1.2rem">{h.reach.title}</h2>
+        <p>{h.reach.text}</p>
+        <div class="chips">
+          {h.reach.regions.map((r, i) => <span class:list={['chip', i === 0 && 'gold']}>{r}</span>)}
+          <span class="chip">{d.ui.beirutTime} · <b class="clock" data-clock dir="ltr">--:--</b></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" style="padding-top:0" aria-labelledby="about-h">
+    <div class="wrap about-grid">
+      <div class="portrait rv">
+        <div class="frame"><Pic src={img('portrait')} alt={`${site.name}, ${h.hero.eyebrow}`} sizes="(min-width: 860px) 400px, 80vw" widths={[320, 480, 640]} /></div>
+      </div>
+      <div class="rv" style="--d:1">
+        <span class="eyebrow">{h.about.eyebrow}</span>
+        <h2 id="about-h" style="font-size:clamp(2.2rem,5vw,4rem);margin:1.1rem 0 1.4rem">{h.about.title}</h2>
+        <p class="big-text">{h.about.text}</p>
+        <div class="tools-row" style="margin:1.6rem 0 2rem">
+          {toolMeta.map(([n, s, c]) => <span class="tool"><b style={`background:${c}`}>{s}</b>{n}</span>)}
+        </div>
+        <a class="btn btn-ghost" href={href(lang, '/about/')}>{h.about.cta} <Icon name="arrow" class="go flip" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0" aria-labelledby="faq-h">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="eyebrow">{h.faq.eyebrow}</span>
+        <h2 id="faq-h">{h.faq.title}</h2>
+      </div>
+      <Faq items={d.faq} />
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap"><Cta lang={lang} /></div>
+  </section>
+</Base>
