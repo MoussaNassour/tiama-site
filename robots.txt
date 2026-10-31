@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://moussanassour.github.io/tiama-site/sitemap-index.xml

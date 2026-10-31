@@ -1,0 +1,28 @@
+# Tiama Nassour
+
+> Freelance graphic designer & illustrator in South Lebanon creating brand identities, logos, packaging and illustration for clients in Lebanon, the GCC, Europe and the US. Work with me online.
+
+Tiama Nassour is a freelance graphic designer and illustrator based in South Lebanon, working online with clients in Lebanon, the GCC, Europe and the United States. Languages: Arabic and English.
+
+## Services
+- Brand Identity & Logo Design: Logos, colour palettes, typography and brand elements that give your business a face people remember.
+- Packaging Design: Boxes, jars, bottles, cups and labels that look beautiful on the shelf and tell your product’s story.
+- Illustration & Character Design: Custom illustrations and characters full of personality, rooted in culture and made to be remembered.
+- Posters & Social Media Design: Scroll-stopping visuals for campaigns, events, menus and social channels.
+- UGC & AI-Powered Content: Fresh product visuals and UGC-style content, blending authentic storytelling with AI-enhanced imagery.
+- Motion & AI Animation: Bring static designs to life with short animations, reels and brand films.
+
+## Pages
+- [Home](https://moussanassour.github.io/tiama-site/)
+- [Portfolio](https://moussanassour.github.io/tiama-site/work/)
+- [Services](https://moussanassour.github.io/tiama-site/services/)
+- [About](https://moussanassour.github.io/tiama-site/about/)
+- [Contact](https://moussanassour.github.io/tiama-site/contact/)
+- [Mielle d’Or case study](https://moussanassour.github.io/tiama-site/work/mielle-dor/)
+- [Fig and Olive case study](https://moussanassour.github.io/tiama-site/work/fig-and-olive/)
+- [King of the Game case study](https://moussanassour.github.io/tiama-site/work/king-of-the-game/)
+- Arabic: https://moussanassour.github.io/tiama-site/ar/ · French: https://moussanassour.github.io/tiama-site/fr/
+
+## Contact
+- Email: nassourtiama@gmail.com
+- WhatsApp / phone: +961 76 610 578
